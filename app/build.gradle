@@ -9,12 +9,27 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        flavorDimensions "versionCode"
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "ali"]//多渠道打包标识 默认阿里
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
+        ali {
+        }
+        appfun {
+        }
+        meizu {
+        }
+        oppo {
+        }
+    }
+    productFlavors.all { flavor ->
+        flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
 }
 
@@ -25,8 +40,27 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.jakewharton:butterknife:8.6.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
+}
+android.applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        def outputFile = output.outputFile
+        if (outputFile != null && outputFile.name.endsWith('.apk')) {
+            File outputDirectory = new File(outputFile.parent)
+            def fileName
+            if (variant.buildType.name == "release") {
+//                    fileName = "app_v${defaultConfig.versionName}_${packageTime()}_${variant.productFlavors[0].name}.apk"
+                fileName = "AppBarLayout_v1.1${variant.productFlavors[0].name}.apk"
+            } else {
+//                    fileName = "app_v${defaultConfig.versionName}_${packageTime()}_beta.apk"
+                fileName = "AppBarLayout_v1.1${variant.productFlavors[0].name}_beta.apk"
+            }
+//            output.outputFile = new File(outputDirectory, fileName)
+//            outputFileName="${variant.applicationId}-${ buildType.name}-${variant.productFlavors[0].name}.apk"
+            outputFileName = fileName
+        }
+    }
 }
